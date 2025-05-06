@@ -1,0 +1,43 @@
+import express from 'express';
+import User from '../models/userSchema.mjs'
+import Cart from '../models/cartSchema.mjs';
+
+const router = express.Router();
+
+//@route: POST /api/user
+//@desc: register user route
+//@access: Public
+
+router.post('/register', async (req, res) => {
+    const { username, email, password } = req.body;
+
+
+    if(!username || !email || !password)
+        return res.status(400).json({
+    message: 'All fields are required'})
+
+    //check if user already exists
+    let user = await User.findOne({email})
+    if(user)
+        return res.status(400).json({
+    message: 'Email already exists!'})
+    
+    //create a new user
+    user = new User({email, username, password})
+    await user.save();
+
+    const cart = new Cart({user: user._id, items: [] })
+    await cart.save();
+
+    user.cart = cart._id;
+    await user.save();
+
+    res.status(201).json({
+        message: "New User created",
+        "userid": user._id
+    })
+
+
+})
+
+export default router;
