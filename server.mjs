@@ -4,12 +4,13 @@ import dotenv from 'dotenv';
 import cors from 'cors';
 import globalError from './middlewares/globalError.mjs';
 import morgan from 'morgan';
+import connectDB from './db/conn.mjs';
 
 //setups
 const app = express();
 dotenv.config();
 const PORT = process.env.PORT || 3001; 
-
+connectDB();
 
 //middlewares
 app.use(express.json());
